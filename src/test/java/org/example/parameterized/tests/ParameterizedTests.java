@@ -3,7 +3,6 @@ package org.example.parameterized.tests;
 import com.google.gson.JsonObject;
 import io.restassured.response.ValidatableResponse;
 import org.example.BaseTest;
-import org.example.JsonFileClient;
 import org.example.orders.ColoursEnum;
 import org.example.orders.Order;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,7 +21,7 @@ public class ParameterizedTests extends BaseTest {
         Order createOrder = order;
         createOrder.setColour(colours);
 
-        ValidatableResponse createResponse = orderClient.create(createOrder);
+        ValidatableResponse createResponse = orderClient.createOrder(createOrder);
         JsonObject bodyJsonObject = createResponse.extract().body().as(JsonObject.class);
         assertTrue(bodyJsonObject.has("track"));
         int track = createResponse.extract().body().jsonPath().getInt("track");

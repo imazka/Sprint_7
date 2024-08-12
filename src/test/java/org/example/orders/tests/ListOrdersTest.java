@@ -14,7 +14,7 @@ public class ListOrdersTest extends BaseTest {
     @Test
     public void getListOrdersOfCourierTest() {
 
-            ValidatableResponse getCourierOrderListResponse = orderClient.getList();
+            ValidatableResponse getCourierOrderListResponse = orderClient.getOrderList();
             JsonObject responseBodyObject = getCourierOrderListResponse.extract().body().as(JsonObject.class);
             JsonArray ordersArray = responseBodyObject.getAsJsonArray("orders");
             assertNotNull(ordersArray);

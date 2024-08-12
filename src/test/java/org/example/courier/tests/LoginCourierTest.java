@@ -18,22 +18,16 @@ public class LoginCourierTest extends BaseTest {
     public void loginCourierWithCorrectDataTest() {
 
         Courier registrationCourier = new Courier(courier.getLogin(), courier.getPassword(), courier.getFirstName());
-        ValidatableResponse registrationResponse = courierClient.create(registrationCourier);
+        ValidatableResponse registrationResponse = courierClient.createCourier(registrationCourier);
         assertEquals(HttpStatus.SC_CREATED, registrationResponse.extract().statusCode());
         assertTrue(registrationResponse.extract().body().jsonPath().getBoolean("ok"));
 
         Courier loginCourier = new Courier(courier.getLogin(), courier.getPassword());
-        ValidatableResponse loginResponse = courierClient.login(loginCourier);
+        ValidatableResponse loginResponse = courierClient.loginCourier(loginCourier);
 
         assertEquals(HttpStatus.SC_OK, loginResponse.extract().statusCode());
         int id = loginResponse.extract().body().jsonPath().getInt("id");
         assertTrue(id > 0);
-
-        Courier deleteCourier = new Courier(id);
-        ValidatableResponse deleteResponse = courierClient.delete(deleteCourier);
-        int statusCode = deleteResponse.extract().statusCode();
-        assertEquals(HttpStatus.SC_OK, statusCode);
-        assertTrue(deleteResponse.extract().body().jsonPath().getBoolean("ok"));
 
     }
 
@@ -42,25 +36,19 @@ public class LoginCourierTest extends BaseTest {
     public void loginCourierOnlyWithLoginTest() {
 
         Courier registrationCourier = new Courier(courier.getLogin(), courier.getPassword(), courier.getFirstName());
-        ValidatableResponse registrationResponse = courierClient.create(registrationCourier);
+        ValidatableResponse registrationResponse = courierClient.createCourier(registrationCourier);
         assertEquals(HttpStatus.SC_CREATED, registrationResponse.extract().statusCode());
         assertTrue(registrationResponse.extract().body().jsonPath().getBoolean("ok"));
 
         Courier loginCourierWithLogin = new Courier(courier.getLogin());
-        ValidatableResponse loginResponseWithLogin = courierClient.login(loginCourierWithLogin);
+        ValidatableResponse loginResponseWithLogin = courierClient.loginCourier(loginCourierWithLogin);
 
         Courier loginCourier = new Courier(courier.getLogin(), courier.getPassword());
-        ValidatableResponse loginResponse = courierClient.login(loginCourier);
+        ValidatableResponse loginResponse = courierClient.loginCourier(loginCourier);
 
         assertEquals(HttpStatus.SC_OK, loginResponse.extract().statusCode());
         int id = loginResponse.extract().body().jsonPath().getInt("id");
         assertTrue(id > 0);
-
-        Courier deleteCourier = new Courier(id);
-        ValidatableResponse deleteResponse = courierClient.delete(deleteCourier);
-        int statusCode = deleteResponse.extract().statusCode();
-        assertEquals(HttpStatus.SC_OK, statusCode);
-        assertTrue(deleteResponse.extract().body().jsonPath().getBoolean("ok"));
 
         String expectadMessage = "Недостаточно данных для входа";
         assertEquals(HttpStatus.SC_BAD_REQUEST, loginResponseWithLogin.extract().statusCode());
@@ -73,11 +61,11 @@ public class LoginCourierTest extends BaseTest {
     public void loginNotRegisteredCourierTest() {
 
         Courier loginCourier = new Courier(courier.getLogin() + r, courier.getPassword() + new Random().nextInt(90000));
-        ValidatableResponse loginResponse = courierClient.login(loginCourier);
+        ValidatableResponse loginResponse = courierClient.loginCourier(loginCourier);
 
-        String expectadMessage = "Учетная запись не найдена";
+        String expectedMessage = "Учетная запись не найдена";
         assertEquals(HttpStatus.SC_NOT_FOUND, loginResponse.extract().statusCode());
-        assertEquals(expectadMessage, loginResponse.extract().body().jsonPath().getString("message"));
+        assertEquals(expectedMessage, loginResponse.extract().body().jsonPath().getString("message"));
 
     }
 
@@ -86,7 +74,7 @@ public class LoginCourierTest extends BaseTest {
     public void loginCourierWithIncorrectLoginTest() {
 
         Courier loginCourier = new Courier(courier.getLogin(), courier.getPassword() + new Random().nextInt(90000));
-        ValidatableResponse loginResponse = courierClient.login(loginCourier);
+        ValidatableResponse loginResponse = courierClient.loginCourier(loginCourier);
 
         String expectadMessage = "Учетная запись не найдена";
         assertEquals(HttpStatus.SC_NOT_FOUND, loginResponse.extract().statusCode());

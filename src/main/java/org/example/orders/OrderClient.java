@@ -11,7 +11,7 @@ public class OrderClient extends RestClient {
     private static final String ORDERS_PATH = "/api/v1/orders";
 
     @Step
-    public ValidatableResponse create(Order order) {
+    public ValidatableResponse createOrder(Order order) {
         return given().spec(getBaseSpec()).body(order).when().post(ORDERS_PATH).then();
     }
 
@@ -21,7 +21,7 @@ public class OrderClient extends RestClient {
     }
 
     @Step
-    public ValidatableResponse getList() {
+    public ValidatableResponse getOrderList() {
         return given().spec(getBaseSpec()).when().get(ORDERS_PATH).then();
     }
 

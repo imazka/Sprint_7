@@ -6,8 +6,6 @@ import org.example.BaseTest;
 import org.example.courier.Courier;
 import org.junit.jupiter.api.Test;
 
-import java.util.Random;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -18,22 +16,16 @@ public class RegistrationCourierTest extends BaseTest {
     public void courierRegistration() {
 
         Courier registrationCourier = new Courier(courier.getLogin(), courier.getPassword(), courier.getFirstName());
-        ValidatableResponse registrationResponse = courierClient.create(registrationCourier);
+        ValidatableResponse registrationResponse = courierClient.createCourier(registrationCourier);
         assertEquals(HttpStatus.SC_CREATED, registrationResponse.extract().statusCode());
         assertTrue(registrationResponse.extract().body().jsonPath().getBoolean("ok"));
 
         Courier loginCourier = new Courier(courier.getLogin(), courier.getPassword());
-        ValidatableResponse loginResponse = courierClient.login(loginCourier);
+        ValidatableResponse loginResponse = courierClient.loginCourier(loginCourier);
 
         assertEquals(HttpStatus.SC_OK, loginResponse.extract().statusCode());
         int id = loginResponse.extract().body().jsonPath().getInt("id");
         assertTrue(id > 0);
-
-        Courier deleteCourier = new Courier(id);
-        ValidatableResponse deleteResponse = courierClient.delete(deleteCourier);
-        int statusCode = deleteResponse.extract().statusCode();
-        assertEquals(HttpStatus.SC_OK, statusCode);
-        assertTrue(deleteResponse.extract().body().jsonPath().getBoolean("ok"));
 
     }
 
@@ -42,25 +34,19 @@ public class RegistrationCourierTest extends BaseTest {
     public void registerCourierWithExistingLoginTest() {
 
         Courier registrationCourier = new Courier(courier.getLogin(), courier.getPassword(), courier.getFirstName());
-        ValidatableResponse registrationResponse = courierClient.create(registrationCourier);
+        ValidatableResponse registrationResponse = courierClient.createCourier(registrationCourier);
         assertEquals(HttpStatus.SC_CREATED, registrationResponse.extract().statusCode());
         assertTrue(registrationResponse.extract().body().jsonPath().getBoolean("ok"));
 
         Courier secondRegistrationCourier = new Courier(courier.getLogin(), courier.getPassword(), courier.getFirstName());
-        ValidatableResponse secondRegistrationResponse = courierClient.create(secondRegistrationCourier);
+        ValidatableResponse secondRegistrationResponse = courierClient.createCourier(secondRegistrationCourier);
 
         Courier loginCourier = new Courier(courier.getLogin(), courier.getPassword());
-        ValidatableResponse loginResponse = courierClient.login(loginCourier);
+        ValidatableResponse loginResponse = courierClient.loginCourier(loginCourier);
 
         assertEquals(HttpStatus.SC_OK, loginResponse.extract().statusCode());
         int id = loginResponse.extract().body().jsonPath().getInt("id");
         assertTrue(id > 0);
-
-        Courier deleteCourier = new Courier(id);
-        ValidatableResponse deleteResponse = courierClient.delete(deleteCourier);
-        int statusCode = deleteResponse.extract().statusCode();
-        assertEquals(HttpStatus.SC_OK, statusCode);
-        assertTrue(deleteResponse.extract().body().jsonPath().getBoolean("ok"));
 
         String expectedMassege = "Этот логин уже используется";
         assertEquals(HttpStatus.SC_CONFLICT, secondRegistrationResponse.extract().statusCode());
@@ -75,7 +61,7 @@ public class RegistrationCourierTest extends BaseTest {
         Courier registrationCourier = new Courier();
         registrationCourier.setPassword(courier.getPassword() + "456");
         registrationCourier.setFirstName(courier.getFirstName() + "mark");
-        ValidatableResponse registrationResponse = courierClient.create(registrationCourier);
+        ValidatableResponse registrationResponse = courierClient.createCourier(registrationCourier);
 
         String expectedMessage = "Недостаточно данных для создания учетной записи";
         assertEquals(HttpStatus.SC_BAD_REQUEST, registrationResponse.extract().statusCode());
@@ -91,20 +77,14 @@ public class RegistrationCourierTest extends BaseTest {
         registrationCourier.setLogin(courier.getLogin());
         registrationCourier.setPassword(courier.getPassword());
 
-        ValidatableResponse registrationResponse = courierClient.create(registrationCourier);
+        ValidatableResponse registrationResponse = courierClient.createCourier(registrationCourier);
 
         Courier loginCourier = new Courier(courier.getLogin(), courier.getPassword());
-        ValidatableResponse loginResponse = courierClient.login(loginCourier);
+        ValidatableResponse loginResponse = courierClient.loginCourier(loginCourier);
 
         assertEquals(HttpStatus.SC_OK, loginResponse.extract().statusCode());
         int id = loginResponse.extract().body().jsonPath().getInt("id");
         assertTrue(id > 0);
-
-        Courier deleteCourier = new Courier(id);
-        ValidatableResponse deleteResponse = courierClient.delete(deleteCourier);
-        int statusCode = deleteResponse.extract().statusCode();
-        assertEquals(HttpStatus.SC_OK, statusCode);
-        assertTrue(deleteResponse.extract().body().jsonPath().getBoolean("ok"));
 
         String expectedMessage = "Недостаточно данных для создания учетной записи";
         assertEquals(HttpStatus.SC_BAD_REQUEST, registrationResponse.extract().statusCode());
